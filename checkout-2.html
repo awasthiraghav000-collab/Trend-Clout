@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Checkout | Trend Clout</title>
+
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+  <style>
+    :root{
+      --bg:#080716;
+      --card:#17142a;
+      --text:#ffffff;
+      --muted:#c9c2d8;
+      --line:rgba(255,255,255,.16);
+      --accent:#ff8bbd;
+      --accent2:#8ddcff;
+      --green:#7CFFB2;
+      --danger:#ff6b6b;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+
+    body{
+      background:
+        radial-gradient(circle at top left,rgba(255,139,189,.20),transparent 30%),
+        radial-gradient(circle at right,rgba(141,220,255,.14),transparent 35%),
+        linear-gradient(180deg,#0b0920,#050510);
+      color:var(--text);
+      font-family:Arial,sans-serif;
+      min-height:100vh;
+    }
+
+    a{text-decoration:none;color:inherit}
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:99;
+      background:rgba(5,5,8,.78);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--line);
+    }
+
+    nav{
+      max-width:1050px;
+      margin:auto;
+      padding:18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:26px;
+      font-weight:900;
+    }
+
+    .logo{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 0 28px rgba(255,139,189,.55);
+    }
+
+    .continue{
+      padding:12px 18px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .wrap{
+      max-width:1050px;
+      margin:auto;
+      padding:28px 16px 70px;
+      display:grid;
+      grid-template-columns:1fr 420px;
+      gap:22px;
+    }
+
+    .panel{
+      background:
+        radial-gradient(circle at bottom,rgba(255,139,189,.10),transparent 40%),
+        rgba(255,255,255,.045);
+      border:1px solid var(--line);
+      border-radius:34px;
+      padding:24px;
+      box-shadow:0 30px 80px rgba(0,0,0,.35);
+    }
+
+    h1{
+      font-size:34px;
+      margin-bottom:8px;
+    }
+
+    .sub{
+      color:var(--muted);
+      margin-bottom:24px;
+      line-height:1.5;
+    }
+
+    label{
+      display:block;
+      margin:16px 0 8px;
+      font-weight:800;
+      color:#eee;
+    }
+
+    input, textarea{
+      width:100%;
+      padding:16px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      border-radius:18px;
+      color:white;
+      font-size:16px;
+      outline:none;
+    }
+
+    textarea{
+      min-height:95px;
+      resize:none;
+    }
+
+    .payment-options{
+      display:grid;
+      gap:12px;
+      margin:12px 0 18px;
+    }
+
+    .payment-card{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:16px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.045);
+      cursor:pointer;
+      font-weight:900;
+    }
+
+    .payment-card input{
+      width:18px;
+      height:18px;
+      accent-color:#ff8bbd;
+    }
+
+    .trust{
+      display:grid;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .trust div{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#eee;
+      font-weight:800;
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      margin-top:22px;
+      padding:18px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#080716;
+      font-size:18px;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 20px 60px rgba(255,139,189,.28);
+    }
+
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    .error{
+      color:var(--danger);
+      margin-top:12px;
+      display:none;
+      font-weight:800;
+    }
+
+    .success{
+      color:var(--green);
+      margin-top:12px;
+      display:none;
+      font-weight:800;
+    }
+
+    .summary h2{
+      font-size:26px;
+      margin-bottom:18px;
+    }
+
+    .item{
+      display:flex;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid var(--line);
+    }
+
+    .item img{
+      width:76px;
+      height:86px;
+      object-fit:contain;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      filter:drop-shadow(0 14px 16px rgba(0,0,0,.55));
+    }
+
+    .item-info{
+      flex:1;
+    }
+
+    .item-info h3{
+      font-size:15px;
+      line-height:1.3;
+      margin-bottom:6px;
+    }
+
+    .item-info p{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .price{
+      font-weight:1000;
+      color:var(--accent2);
+      white-space:nowrap;
+    }
+
+    .totals{
+      margin-top:18px;
+      display:grid;
+      gap:12px;
+      color:var(--muted);
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .grand{
+      border-top:1px solid var(--line);
+      padding-top:14px;
+      color:white;
+      font-size:22px;
+      font-weight:1000;
+    }
+
+    .empty{
+      padding:22px;
+      border:1px dashed var(--line);
+      border-radius:20px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    @media(max-width:850px){
+      .wrap{ grid-template-columns:1fr; }
+      .brand{ font-size:22px; }
+      .continue{ font-size:14px; padding:10px 13px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="brand">
+      <span class="logo"></span>
+      <span>Trend Clout</span>
+    </a>
+    <a href="index.html" class="continue">Continue Shopping</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="panel">
+    <h1>Checkout</h1>
+    <p class="sub">Fill your details and choose COD or online payment.</p>
+
+    <label>Name</label>
+    <input id="customerName" type="text" placeholder="Your full name">
+
+    <label>Phone Number</label>
+    <input id="phone" type="tel" placeholder="10 digit mobile number">
+
+    <label>Email Optional</label>
+    <input id="email" type="email" placeholder="your@email.com">
+
+    <label>Address</label>
+    <textarea id="address" placeholder="House no, area, city, state"></textarea>
+
+    <label>Pincode</label>
+    <input id="pincode" type="text" placeholder="Pincode">
+
+    <label>Payment Method</label>
+    <div class="payment-options">
+      <label class="payment-card">
+        <input type="radio" name="payment" value="cod" checked>
+        Cash on Delivery
+      </label>
+
+      <label class="payment-card">
+        <input type="radio" name="payment" value="online">
+        UPI / Online Payment
+      </label>
+    </div>
+
+    <div class="trust">
+      <div>✅ COD Available</div>
+      <div>🚚 4–7 Day Delivery</div>
+      <div>🔐 Secure Checkout</div>
+      <div>📞 Confirmation Call</div>
+    </div>
+
+    <button class="btn" id="checkoutBtn" onclick="handleCheckout()">Place Order</button>
+
+    <div class="error" id="errorMsg"></div>
+    <div class="success" id="successMsg"></div>
+  </section>
+
+  <aside class="panel summary">
+    <h2>Order Summary</h2>
+    <div id="cartItems"></div>
+
+    <div class="totals">
+      <div class="row">
+        <span>Subtotal</span>
+        <strong id="subtotal">₹0</strong>
+      </div>
+      <div class="row">
+        <span>Delivery</span>
+        <strong id="delivery">Free</strong>
+      </div>
+      <div class="row grand">
+        <span>Total</span>
+        <strong id="grandTotal">₹0</strong>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<script>
+  const CASHFREE_FUNCTION_URL = "/.netlify/functions/netlify-order";
+
+  let cart = [];
+  let subtotal = 0;
+  let delivery = 0;
+  let grandTotal = 0;
+
+  function loadCart(){
+    const savedCart = JSON.parse(localStorage.getItem("trendCloutCart")) || [];
+    const singleItem = JSON.parse(localStorage.getItem("checkoutItem")) || null;
+
+    if(savedCart.length > 0){
+      cart = savedCart;
+    } else if(singleItem){
+      cart = [singleItem];
+    } else {
+      cart = [];
+    }
+
+    renderCart();
+  }
+
+  function getItemPrice(item){
+    return Number(item.price || item.productPrice || 0);
+  }
+
+  function getItemQty(item){
+    return Number(item.qty || item.quantity || 1);
+  }
+
+  function renderCart(){
+    const box = document.getElementById("cartItems");
+
+    if(cart.length === 0){
+      box.innerHTML = `<div class="empty">Your cart is empty.</div>`;
+      subtotal = 0;
+      grandTotal = 0;
+      updateTotals();
+      return;
+    }
+
+    subtotal = cart.reduce((sum,item)=>{
+      return sum + getItemPrice(item) * getItemQty(item);
+    },0);
+
+    delivery = subtotal >= 999 ? 0 : 79;
+    grandTotal = subtotal + delivery;
+
+    box.innerHTML = cart.map(item=>{
+      const name = item.name || item.title || "Trend Clout Tee";
+      const img = item.img || item.image || "Photos/1000016651.png";
+      const size = item.size || "Default";
+      const qty = getItemQty(item);
+      const price = getItemPrice(item);
+
+      return `
+        <div class="item">
+          <img src="${img}" alt="${name}">
+          <div class="item-info">
+            <h3>${name}</h3>
+            <p>Size: ${size} • Qty: ${qty}</p>
+          </div>
+          <div class="price">₹${price * qty}</div>
+        </div>
+      `;
+    }).join("");
+
+    updateTotals();
+  }
+
+  function updateTotals(){
+    document.getElementById("subtotal").innerText = "₹" + subtotal;
+    document.getElementById("delivery").innerText = delivery === 0 ? "Free" : "₹" + delivery;
+    document.getElementById("grandTotal").innerText = "₹" + grandTotal;
+  }
+
+  function showError(msg){
+    const error = document.getElementById("errorMsg");
+    const success = document.getElementById("successMsg");
+    success.style.display = "none";
+    error.innerText = msg;
+    error.style.display = "block";
+  }
+
+  function showSuccess(msg){
+    const error = document.getElementById("errorMsg");
+    const success = document.getElementById("successMsg");
+    error.style.display = "none";
+    success.innerText = msg;
+    success.style.display = "block";
+  }
+
+  function getCustomerDetails(){
+    return {
+      name: document.getElementById("customerName").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      address: document.getElementById("address").value.trim(),
+      pincode: document.getElementById("pincode").value.trim()
+    };
+  }
+
+  function validateDetails(details){
+    if(cart.length === 0){
+      showError("Your cart is empty.");
+      return false;
+    }
+
+    if(!details.name || !details.phone || !details.address || !details.pincode){
+      showError("Please fill name, phone, address and pincode.");
+      return false;
+    }
+
+    if(details.phone.length < 10){
+      showError("Please enter a valid phone number.");
+      return false;
+    }
+
+    return true;
+  }
+
+  function saveOrder(paymentType){
+    const details = getCustomerDetails();
+
+    const order = {
+      customer: details,
+      payment: paymentType,
+      items: cart,
+      subtotal,
+      delivery,
+      total: grandTotal,
+      date: new Date().toLocaleString()
+    };
+
+    localStorage.setItem("trendCloutLastOrder", JSON.stringify(order));
+    return order;
+  }
+
+  function placeCODOrder(){
+    saveOrder("Cash on Delivery");
+
+    showSuccess("COD order placed. We will call you for confirmation.");
+
+    setTimeout(()=>{
+      localStorage.removeItem("trendCloutCart");
+      localStorage.removeItem("checkoutItem");
+      window.location.href = "thankyou.html";
+    },1200);
+  }
+
+  async function payWithCashfree(){
+    const details = getCustomerDetails();
+
+    if(!validateDetails(details)) return;
+
+    const btn = document.getElementById("checkoutBtn");
+    btn.disabled = true;
+    btn.innerText = "Opening Payment...";
+
+    saveOrder("Online Payment");
+
+    try{
+      const res = await fetch(CASHFREE_FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          amount: grandTotal,
+          name: details.name,
+          phone: details.phone,
+          email: details.email || "customer@example.com"
+        })
+      });
+
+      const data = await res.json();
+
+      if(!data.payment_session_id){
+        console.log(data);
+        showError("Payment failed. Check Netlify function and Cashfree keys.");
+        btn.disabled = false;
+        btn.innerText = "Place Order";
+        return;
+      }
+
+      const cashfree = Cashfree({
+        mode: "production"
+      });
+
+      cashfree.checkout({
+        paymentSessionId: data.payment_session_id,
+        redirectTarget: "_self"
+      });
+
+    }catch(error){
+      console.log(error);
+      showError("Payment system error. Try again or choose COD.");
+      btn.disabled = false;
+      btn.innerText = "Place Order";
+    }
+  }
+
+  function handleCheckout(){
+    const payment = document.querySelector('input[name="payment"]:checked')?.value;
+    const details = getCustomerDetails();
+
+    if(!validateDetails(details)) return;
+
+    if(payment === "cod"){
+      placeCODOrder();
+      return;
+    }
+
+    if(payment === "online"){
+      payWithCashfree();
+      return;
+    }
+
+    showError("Please select payment method.");
+  }
+
+  loadCart();
+</script>
+
+</body>
+</html>
